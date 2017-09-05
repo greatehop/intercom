@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import itertools
 from random import choice
 import os
-
+from datetime import datetime
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 path_db = os.path.join(basedir, 'intercom.db')
@@ -34,7 +34,8 @@ class IntercomDB(object):
 
     def update_code(self, code_id):
         db.session.query(Code).filter_by(
-            id=code_id).update({'is_done': True})
+            id=code_id).update({'is_done': True,
+                                'datetime': datetime.utcnow()})
         db.session.commit()
 
 
@@ -42,6 +43,7 @@ class Code(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(4), index=True, unique=True)
     is_done = db.Column(db.Boolean, default=False)
+    datetime = db.Column(db.DateTime, default=None)
 
 
 @app.route('/', strict_slashes=False)
@@ -53,8 +55,8 @@ def index(code_id=None):
         return redirect('/')
 
     code_list_total = intercom_db.get_code_list()
-
-    code_list_done = [i for i in code_list_total if i.is_done]
+    code_list_done = sorted([i for i in code_list_total if i.is_done],
+                            key=lambda i: i.datetime, reverse=True)
     code_list_in_progress = [i for i in code_list_total if not i.is_done]
     code_random = choice(code_list_in_progress)
     code_details = {
@@ -80,5 +82,5 @@ if __name__ == '__main__':
     intercom_db = IntercomDB(path_db, code_list)
 
     # run WebUI
-    flask_args = {'host': '0.0.0.0', 'port': 5000, 'debug': True}
+    flask_args = {'host': '0.0.0.0', 'port': 5000, 'debug': False}
     app.run(**flask_args)
