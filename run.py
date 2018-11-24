@@ -1,7 +1,6 @@
 from flask import Flask, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
 
-import itertools
 from random import choice
 import os
 from datetime import datetime
@@ -33,9 +32,8 @@ class IntercomDB(object):
         return code_list
 
     def update_code(self, code_id):
-        db.session.query(Code).filter_by(
-            id=code_id).update({'is_done': True,
-                                'datetime': datetime.utcnow()})
+        data = {'is_done': True, 'datetime': datetime.utcnow()}
+        db.session.query(Code).filter_by(id=code_id).update(data)
         db.session.commit()
 
 
@@ -73,10 +71,8 @@ def index(code_id=None):
 
 if __name__ == '__main__':
 
-    # generate code list
-    # TODO: need fix
-    permutations = itertools.permutations('1234567890', r=4)
-    code_list = [''.join(i) for i in permutations if i[0] != '0']
+    # generate list of codes
+    code_list = [i for i in range(1000, 9999)]
 
     # create db object
     intercom_db = IntercomDB(path_db, code_list)

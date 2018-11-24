@@ -10,5 +10,3 @@ if [ ! -d ${PATH_PROJECT}/venv ]; then
 fi
 
 ${PATH_PROJECT}/venv/bin/python ${PATH_PROJECT}/run.py > /dev/null 2>&1 &
-
-
