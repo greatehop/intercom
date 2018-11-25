@@ -48,7 +48,7 @@ class Code(db.Model):
 @app.route('/<int:code_id>', strict_slashes=False)
 def index(code_id=None):
 
-    if code_id: # is not None:
+    if code_id:
         intercom_db.update_code(code_id)
         return redirect('/')
 
@@ -65,7 +65,7 @@ def index(code_id=None):
             'in_progress': len(codes_in_progress),
             'total': len(codes_total)},
         'random': code_random,
-        'done': codes_done,
+        'done': codes_done[:codes_limit],
         'in_progress': codes_in_progress[:codes_limit]
     }
     return render_template('index.html', codes=codes)
