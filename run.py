@@ -27,9 +27,9 @@ class IntercomDB(object):
             db.session.add(data)
         db.session.commit()
 
-    def get_code_list(self):
-        code_list = Code.query.all()
-        return code_list
+    def get_codes(self):
+        codes = Code.query.all()
+        return codes
 
     def update_code(self, code_id):
         data = {'is_done': True, 'datetime': datetime.utcnow()}
@@ -48,31 +48,33 @@ class Code(db.Model):
 @app.route('/<int:code_id>', strict_slashes=False)
 def index(code_id=None):
 
-    if code_id is not None:
+    if code_id: # is not None:
         intercom_db.update_code(code_id)
         return redirect('/')
 
-    code_list_total = intercom_db.get_code_list()
-    code_list_done = sorted([i for i in code_list_total if i.is_done],
+    codes_total = intercom_db.get_codes()
+    codes_done = sorted([i for i in codes_total if i.is_done],
                             key=lambda i: i.datetime, reverse=True)
-    code_list_in_progress = [i for i in code_list_total if not i.is_done]
-    code_random = choice(code_list_in_progress)
-    code_details = {
-        'done': len(code_list_done),
-        'in_progress': len(code_list_in_progress),
-        'total': len(code_list_total)}
+    codes_in_progress = [i for i in codes_total if not i.is_done]
+    code_random = choice(codes_in_progress)
 
-    return render_template('index.html',
-                           code_list_in_progress=code_list_in_progress,
-                           code_list_done=code_list_done,
-                           code_random=code_random,
-                           code_details=code_details)
+    codes_limit = 10
+    codes = {
+        'details': {
+            'done': len(codes_done),
+            'in_progress': len(codes_in_progress),
+            'total': len(codes_total)},
+        'random': code_random,
+        'done': codes_done,
+        'in_progress': codes_in_progress[:codes_limit]
+    }
+    return render_template('index.html', codes=codes)
 
 
 if __name__ == '__main__':
 
     # generate list of codes
-    code_list = [i for i in range(1000, 9999)]
+    code_list = [i for i in range(1000, 10000)]
 
     # create db object
     intercom_db = IntercomDB(path_db, code_list)

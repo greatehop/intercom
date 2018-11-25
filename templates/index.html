@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>CrackIntercom</title>
+    <title>Intercom</title>
 </head>
 
 <body>
-    <b>Done:</b> {{ code_details.done }}
-    <b>In progress:</b> {{ code_details.in_progress }}
-    <b>Total:</b> {{ code_details.total }}
+    <b>Done:</b> {{ codes.details.done }}
+    <b>In progress:</b> {{ codes.details.in_progress }}
+    <b>Total:</b> {{ codes.details.total }}
 
     <hr>
 
-        <b>Random:</b> {{ code_random.code }} - <a href="/{{ code_random.id }}">del</a>
+    <b>Random:</b> {{ codes.random.code }} - <a href="/{{ codes.random.id }}">del</a>
 
     <hr>
 
     <div style="float:left; width:50%;">
         <b>In progress</b>
-        {% for code in code_list_in_progress %}
+        {% for code in codes.in_progress %}
             <p>{{ code.code }} - <a href="/{{ code.id }}">del</a></p>
         {% endfor %}
     </div>
 
     <div style="float:left; width:50%;">
         <b>Done</b>
-        {% for code1 in code_list_done %}
-            <p>{{ code1.code }}</p>
+        {% for code in codes.done %}
+            <p>{{ code.code }}</p>
         {% endfor %}
     </div>
 
