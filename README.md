@@ -36,3 +36,8 @@ All setup exist in run.sh, but you can do it manually
 ### Nginx WSGI module
 
 ### Docker
+docker build -t intercom .
+
+#TODO: fix it
+docker run --rm -it -p 5000:5000 intercom
+docker run -d -p 5000:5000 intercom
